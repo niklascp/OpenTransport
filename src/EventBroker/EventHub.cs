@@ -1,36 +1,47 @@
 ﻿using Microsoft.AspNet.SignalR;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace EventBroker
 {
     public class EventHub : Hub
     {
-        ISubscriptionManager subscriptionManager;
+        CancellationToken cancellationToken = CancellationToken.None;
+        ISubscriptionManager<string> subscriptionManager;
 
-        public EventHub(ISubscriptionManager subscriptionManager)
+        public EventHub(ISubscriptionManager<string> subscriptionManager)
         {
-            this.subscriptionManager = subscriptionManager;
+            this.subscriptionManager = subscriptionManager;            
         }
 
-        public void Publish(object message, string[] topics)
+        public override Task OnConnected()
         {
-            /* TODO: Pub message in work queue */
-            var targetTopics = subscriptionManager.GetTopics();
+            Task.Run(() => Deliver(Context.ConnectionId));
 
-            var clients = new HashSet<string>();
+            return base.OnConnected();
+        }
 
-            foreach (var targetTopic in targetTopics)
+        private void Deliver(string clientId)
+        {
+            while (true)
             {
-                foreach (var topic in topics)
+                Clients.All.deliver(clientId);
 
-                    if (string.Equals(targetTopic, topic))
-                    {
-                        clients.UnionWith(subscriptionManager.GetClients(targetTopic));
-                    }
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
+                string message;
+                if (subscriptionManager.TryTake(clientId, out message, 1000, cancellationToken))
+                {
+                    Clients.Client(clientId).vehicleEvent(message);
+                }
             }
+        }
 
-            foreach (var client in clients)
-                Clients.Client(client).vehicleEvent(message);
+        public void Publish(string message, string[] topics)
+        {
+            subscriptionManager.Publish(message, topics);
         }
 
         public void Subscribe(string[] topics)

@@ -3,25 +3,35 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Timers;
+using System.Threading;
 
 namespace EventBroker
 {
     public class EventTestProvider 
     {
-        Timer timer;
-        
-        public EventTestProvider()
-        {
-            timer = new Timer(1000);
-            timer.Elapsed += Timer_Elapsed;
+        ISubscriptionManager<string> subscriptionManager;
+        Task task;
+        CancellationToken cancellationToken;
 
-            timer.Start();
+        public EventTestProvider(ISubscriptionManager<string> subscriptionManager)
+        {
+            task = new Task(Loop);
+            task.Start();
+
+            this.subscriptionManager = subscriptionManager;
         }
 
-        private void Timer_Elapsed(object sender, ElapsedEventArgs e)
+        private void Loop()
         {
-            throw new NotImplementedException();
+            while (true)
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
+                
+
+                Task.Delay(5000);
+            }
         }
     }
 }

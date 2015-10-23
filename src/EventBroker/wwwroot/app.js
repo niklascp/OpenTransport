@@ -1,7 +1,11 @@
 ﻿$(function () {
     var eventHub = $.connection.eventHub;
 
-    eventHub.client.vehicleEvent = function (event) {
+    eventHub.client.deliver = function deliver(clientId) {
+        console.log('deliver(' + clientId + ')');
+    }
+
+    eventHub.client.vehicleEvent = function vehicleEvent(event) {
         console.log("server calling...", event);
     }
 
