@@ -4,8 +4,8 @@
   "description": "EventBroker Class Library",
   "authors": [ "ncp" ],
   "tags": [ "" ],
-  "projectUrl": "",
-  "licenseUrl": "",
+  "projectUrl": "https://github.com/niklascp/OpenTransport",
+  "licenseUrl": "https://github.com/niklascp/OpenTransport/blob/master/tools/EventBroker/LICENSE.md",
   
   "dependencies": {
   },
