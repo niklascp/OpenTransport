@@ -9,11 +9,11 @@ namespace EventBroker
 {
     public class EventTestProvider 
     {
-        ISubscriptionManager<string> subscriptionManager;
+        ISubscriptionManager subscriptionManager;
         Task task;
         CancellationToken cancellationToken;
 
-        public EventTestProvider(ISubscriptionManager<string> subscriptionManager)
+        public EventTestProvider(ISubscriptionManager subscriptionManager)
         {
             task = new Task(Loop);
             task.Start();

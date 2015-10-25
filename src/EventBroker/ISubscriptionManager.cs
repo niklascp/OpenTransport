@@ -1,15 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace EventBroker
 {
-    public interface ISubscriptionManager<T>
+    public interface ISubscriptionManager
     {
-        IEnumerable<string> GetClients(string topic);
+        IEnumerable<string> GetClientsForTopic(Topic topic);
         IEnumerable<string> GetTopics();
-        void Publish(T message, params string[] topics);
-        void Subscribe(string clientId, string topic);
-        void Unsubscribe(string clientId, string topic);
-        bool TryTake(string clientId, out T message, int millisecondsTimeout, CancellationToken cancellationToken);
+        void Subscribe(string clientId, Topic topic, Action<Topic, string> handler);
+        void Unsubscribe(string clientId, Topic topic);
+        void Publish(Topic topic, string message);
     }
 }

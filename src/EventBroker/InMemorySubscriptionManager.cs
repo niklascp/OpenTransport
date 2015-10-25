@@ -1,21 +1,20 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 namespace EventBroker
 {
-    public class InMemorySubscriptionManager<T> : ISubscriptionManager<T>
+    public class InMemorySubscriptionManager : ISubscriptionManager
     {
         private object syncRoot;
-        private BlockingCollection<T> queue;
         private ConcurrentDictionary<string, ClientState> clients;
         private ConcurrentDictionary<string, TopicState> topics;
 
         public InMemorySubscriptionManager()
         {
             syncRoot = new object();
-            queue = new BlockingCollection<T>();
             clients = new ConcurrentDictionary<string, ClientState>(StringComparer.OrdinalIgnoreCase);
             topics = new ConcurrentDictionary<string, TopicState>(StringComparer.OrdinalIgnoreCase);
         }
@@ -25,7 +24,7 @@ namespace EventBroker
             return topics.Keys;
         }
 
-        public IEnumerable<string> GetClients(string topic)
+        public IEnumerable<string> GetClientsForTopic(Topic topic)
         {
             if (!topics.ContainsKey(topic))
                 return new HashSet<string>();
@@ -36,61 +35,96 @@ namespace EventBroker
             }
         }
 
-        public void Subscribe(string clientId, string topic)
+        public void Subscribe(string client, Topic topic, Action<Topic, string> handler)
         {
-            var clientState = clients.GetOrAdd(clientId, _ => new ClientState());
-            var topicState = topics.GetOrAdd(topic, _ => new TopicState());
+            var clientState = clients.GetOrAdd(client, _ => new ClientState(client));
+            var topicState = topics.GetOrAdd(topic, _ => new TopicState(topic));
             
             lock (syncRoot)
             {
-                topics[topic].Clients.Add(clientId);
+                topics[topic].Add(client, handler);
             }
         }
 
-        public void Unsubscribe(string clientId, string topic)
+        public void Unsubscribe(string clientId, Topic topic)
         {
             TopicState topicState;
 
-            if (topics.TryGetValue(clientId, out topicState))
+            if (topics.TryGetValue(topic, out topicState))
             {
                 lock (syncRoot)
                 {
-                    topicState.Clients.Remove(clientId);
+                    topicState.Remove(clientId);
 
                     /* This is the last subscriber on this topic, remove the topic. */
-                    if (topicState.Clients.Count == 0)
+                    if (topicState.Clients.Count() == 0)
                         topics.TryRemove(topic, out topicState);
 
-                    if (topicState.Clients.Count != 0)
-                        throw new InvalidOperationException("Should not happen!");
+                    if (topicState.Clients.Count() != 0)
+                        throw new InvalidOperationException("Subscribed topic was removed.");
                 }
             }
         }
 
-        public bool TryTake(string clientId, out T message, int millisecondsTimeout, CancellationToken cancellationToken)
+        public void Publish(Topic topic, string message)
         {
-            return queue.TryTake(out message, millisecondsTimeout, cancellationToken);
-        }
+            TopicState topicState;
 
-        public void Publish(T message, params string[] topics)
-        {
-            /* TODO: Pub message only to clients with matching topic */
-            queue.Add(message);
+            if (topics.TryGetValue(topic, out topicState))
+            {
+                topicState.Publish(message);
+            }            
         }
 
         private class ClientState
         {
-            DateTime LastDateTime;
+            public string client;
+            public DateTime LastDateTime;
+
+            public ClientState(string client)
+            {
+                this.client = client;
+            }
         }
 
         private class TopicState
         {
-            public TopicState()
+            private Topic topic;
+            private Dictionary<string, Action<Topic, string>> clients;
+            private Action<Topic, string> handler;
+
+            public TopicState(Topic topic)
             {
-                Clients = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                this.topic = topic;
+                clients = new Dictionary<string, Action<Topic, string>>(StringComparer.OrdinalIgnoreCase);
             }
 
-            public ISet<string> Clients { get; private set; }
+            internal void Publish(string message)
+            {
+                if (handler != null)
+                    handler(topic, message);                        
+            }
+
+            public IEnumerable<string> Clients
+            {
+                get { return clients.Keys; }
+            }
+
+            public void Add(string client, Action<Topic, string> value)
+            {
+                clients.Add(client, value);
+                handler += value;
+            }
+
+            public void Remove(string client)
+            {
+                Action<Topic, string> value;
+                if (clients.TryGetValue(client, out value))
+                {
+                    clients.Remove(client);
+                    handler -= value;
+                }                
+            }
         }
 
     }

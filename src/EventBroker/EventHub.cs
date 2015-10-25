@@ -8,46 +8,31 @@ namespace EventBroker
     public class EventHub : Hub
     {
         CancellationToken cancellationToken = CancellationToken.None;
-        ISubscriptionManager<string> subscriptionManager;
+        ISubscriptionManager subscriptionManager;
 
-        public EventHub(ISubscriptionManager<string> subscriptionManager)
+        public EventHub(ISubscriptionManager subscriptionManager)
         {
             this.subscriptionManager = subscriptionManager;            
         }
 
         public override Task OnConnected()
         {
-            Task.Run(() => Deliver(Context.ConnectionId));
-
             return base.OnConnected();
         }
 
-        private void Deliver(string clientId)
+        public void Publish(string topic, string message)
         {
-            while (true)
+            subscriptionManager.Publish(topic, message);
+        }
+
+        public void Subscribe(string topic)
+        {
+            var clientId = Context.ConnectionId;
+
+            subscriptionManager.Subscribe(Context.ConnectionId, topic, (t, m) =>
             {
-                Clients.All.deliver(clientId);
-
-                if (cancellationToken.IsCancellationRequested)
-                    return;
-
-                string message;
-                if (subscriptionManager.TryTake(clientId, out message, 1000, cancellationToken))
-                {
-                    Clients.Client(clientId).vehicleEvent(message);
-                }
-            }
-        }
-
-        public void Publish(string message, string[] topics)
-        {
-            subscriptionManager.Publish(message, topics);
-        }
-
-        public void Subscribe(string[] topics)
-        {
-            foreach (var topic in topics)
-                subscriptionManager.Subscribe(Context.ConnectionId, topic);
+                Clients.Client(clientId).vehicleEvent(m);
+            });
         }
     }
 }
