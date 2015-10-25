@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
+using OpenTransport.EventBroker;
+
 namespace EventBroker
 {
     public class EventHub : Hub

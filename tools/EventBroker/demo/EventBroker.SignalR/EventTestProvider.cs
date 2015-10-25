@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
 
+using OpenTransport.EventBroker;
+
 namespace EventBroker
 {
     public class EventTestProvider 

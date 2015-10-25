@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 
-namespace EventBroker
+namespace OpenTransport.EventBroker
 {
     public interface ISubscriptionManager
     {

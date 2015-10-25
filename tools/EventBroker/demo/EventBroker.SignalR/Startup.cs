@@ -3,6 +3,8 @@ using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.Logging;
 using Microsoft.Framework.Runtime;
 
+using OpenTransport.EventBroker;
+
 namespace EventBroker
 {
     public class Startup
