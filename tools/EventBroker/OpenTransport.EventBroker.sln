@@ -10,10 +10,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		global.json = global.json
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "demo", "demo", "{A9B46BD1-CE34-462B-874C-136F9E972D09}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "EventBroker.SignalR", "demo\EventBroker.SignalR\EventBroker.SignalR.xproj", "{F2DC9BF3-1E48-483E-A474-B13E9CDBF272}"
-EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "OpenTransport.EventBroker", "src\OpenTransport.EventBroker\OpenTransport.EventBroker.xproj", "{22634545-F643-41F0-AF3C-92BC6DDBAE98}"
 EndProject
 Global
@@ -35,7 +31,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{F2DC9BF3-1E48-483E-A474-B13E9CDBF272} = {A9B46BD1-CE34-462B-874C-136F9E972D09}
 		{22634545-F643-41F0-AF3C-92BC6DDBAE98} = {9DFA0A0A-667F-4491-BF2C-677F1F665CFB}
 	EndGlobalSection
 EndGlobal
