@@ -9,12 +9,14 @@ namespace EventBroker
 {
     public class EventHub : Hub
     {
+        EventTestProvider e;
         CancellationToken cancellationToken = CancellationToken.None;
         ISubscriptionManager subscriptionManager;
 
-        public EventHub(ISubscriptionManager subscriptionManager)
+        public EventHub(ISubscriptionManager subscriptionManager, EventTestProvider e)
         {
-            this.subscriptionManager = subscriptionManager;            
+            this.subscriptionManager = subscriptionManager;
+            this.e = e;
         }
 
         public override Task OnConnected()

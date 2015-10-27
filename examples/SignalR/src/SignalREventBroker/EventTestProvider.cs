@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Threading;
 
 using OpenTransport.EventBroker;
+using Newtonsoft.Json;
 
 namespace EventBroker
 {
@@ -30,9 +31,12 @@ namespace EventBroker
                 if (cancellationToken.IsCancellationRequested)
                     return;
 
-                
+                subscriptionManager.Publish("line.300s", JsonConvert.SerializeObject(new {
+                    time = DateTime.Now,
+                    line = new { number = 300, designation = "300S" },
+                }));
 
-                Task.Delay(5000);
+                Task.Delay(5000).Wait();
             }
         }
     }
