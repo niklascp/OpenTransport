@@ -3,7 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SignalR", "SignalR\SignalR.xproj", "{F2DC9BF3-1E48-483E-A474-B13E9CDBF272}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SignalREventBroker", "src\SignalREventBroker\SignalREventBroker.xproj", "{F2DC9BF3-1E48-483E-A474-B13E9CDBF272}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{05ACB37B-65FC-4118-87C4-6D3D9D798373}"
+	ProjectSection(SolutionItems) = preProject
+		global.json = global.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
