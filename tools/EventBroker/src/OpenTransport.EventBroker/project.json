@@ -1,9 +1,9 @@
 ﻿{
   "title": "OpenTransport.EventBroker",  
-  "version": "1.0.0-beta1-*",
+  "version": "1.0.0-beta1-3",
   "description": "EventBroker Class Library",
-  "authors": [ "ncp" ],
-  "tags": [ "" ],
+  "authors": [ "Niklas Christoffer Petersen" ],
+  "tags": [ "Open-Data", "Intelligent-Transportation-Systems" ],
   "projectUrl": "https://github.com/niklascp/OpenTransport",
   "licenseUrl": "https://github.com/niklascp/OpenTransport/blob/master/tools/EventBroker/LICENSE",
   
